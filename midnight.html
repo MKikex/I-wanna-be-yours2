@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b080a">
+<title>Midnight Lover</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@400;500&display=swap');
+
+:root{
+    --bg:#0b080a;
+    --wine:#702738;
+    --rose:#b56b7c;
+    --paper:#d9c7c1;
+    --muted:#817579;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+    background:var(--bg);
+    color:var(--paper);
+    font-family:'Cormorant Garamond',serif;
+    overflow-x:hidden;
+}
+button{font:inherit;cursor:pointer}
+a{color:inherit;text-decoration:none}
+::selection{background:#702738;color:white}
+
+.noise{
+    position:fixed;inset:0;z-index:100;pointer-events:none;opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.cursor-glow{
+    position:fixed;width:250px;height:250px;border-radius:50%;
+    background:rgba(119,34,54,.09);filter:blur(80px);
+    pointer-events:none;z-index:0;
+}
+.nav{
+    position:absolute;top:0;left:0;right:0;padding:28px 7%;
+    display:flex;justify-content:space-between;align-items:center;z-index:10;
+}
+.brand{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:5px}
+.brand span{color:var(--rose)}
+.nav-note{
+    font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:2px;
+}
+.hero{
+    min-height:100svh;position:relative;overflow:hidden;display:flex;
+    align-items:center;justify-content:center;padding:100px 24px 80px;
+}
+.hero-content{
+    position:relative;z-index:4;text-align:center;animation:fadeup 1.5s ease both;
+}
+.kicker{
+    font-family:'DM Mono',monospace;font-size:9px;letter-spacing:4px;
+    text-transform:uppercase;color:var(--rose);
+}
+.hero h1{
+    font-size:clamp(80px,17vw,170px);font-weight:400;line-height:.83;
+    letter-spacing:-7px;margin-top:35px;
+}
+.hero h1 span{font-style:italic;color:#a34d60}
+.hero-sub{margin:30px auto 0;font-size:16px;color:#aa9ba0;letter-spacing:1px}
+.open-btn{
+    margin-top:50px;background:transparent;border:1px solid rgba(255,255,255,.15);
+    color:var(--paper);padding:17px 30px;font-family:'DM Mono',monospace;
+    font-size:9px;letter-spacing:3px;transition:.4s;
+}
+.open-btn:hover{border-color:var(--rose);background:rgba(112,39,56,.2)}
+.open-btn span{color:var(--rose);margin-left:15px}
+.hero-bottom{
+    position:absolute;bottom:30px;left:7%;right:7%;display:flex;
+    justify-content:space-between;color:#766b70;font-family:'DM Mono',monospace;
+    font-size:8px;letter-spacing:2px;z-index:4;
+}
+.sky{
+    position:absolute;inset:0;
+    background:radial-gradient(ellipse at 50% 45%,rgba(100,30,47,.18),transparent 60%),
+    linear-gradient(to bottom,#0b080a,#120a0e 75%,#090608);
+}
+.moon{
+    position:absolute;top:12%;right:14%;width:90px;height:90px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#e1d5d1,#b5a3a4 48%,#68565c);
+    box-shadow:0 0 80px rgba(195,144,155,.12);opacity:.6;
+    animation:float 7s ease-in-out infinite;
+}
+.city{
+    position:absolute;bottom:0;left:0;width:100%;height:28%;
+    display:flex;align-items:flex-end;gap:3px;opacity:.8;
+}
+.building{
+    background:linear-gradient(#151015,#090608);position:relative;flex:1;
+    border-top:1px solid rgba(255,255,255,.03);
+}
+.building::before{
+    content:"";position:absolute;inset:15px 8px;
+    background-image:radial-gradient(#9b5260 1px,transparent 2px);
+    background-size:17px 23px;opacity:.25;
+}
+.b1{height:45%}.b2{height:70%}.b3{height:52%}.b4{height:88%}
+.b5{height:62%}.b6{height:40%}.b7{height:75%}.b8{height:50%}
+.b9{height:82%}.b10{height:38%}.b11{height:65%}.b12{height:55%}
+.rain{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2}
+.drop{
+    position:absolute;top:-100px;width:1px;height:70px;
+    background:linear-gradient(transparent,rgba(172,153,163,.25));
+    animation:rain linear infinite;
+}
+@keyframes rain{from{transform:translateY(-100px)}to{transform:translateY(110svh)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes fadeup{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* SECTIONS */
+.section{position:relative;z-index:3;padding:110px 8%}
+.section-head{
+    display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.09);
+    padding-bottom:17px;font-family:'DM Mono',monospace;font-size:9px;
+    letter-spacing:3px;color:var(--muted);
+}
+.section-head span:first-child{color:var(--rose)}
+.clock-section{text-align:center;padding-top:60px;padding-bottom:40px}
+.clock{font-family:'DM Mono',monospace;font-size:13px;color:#b49ba2;letter-spacing:5px}
+.clock-caption{margin-top:12px;font-size:13px;color:var(--muted);font-style:italic}
+
+/* PLAYER */
+.player-section{background:linear-gradient(180deg,transparent,rgba(75,19,34,.10),transparent)}
+.player{
+    display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:70px;
+}
+.album{
+    width:min(280px,72vw);aspect-ratio:1;
+    background:radial-gradient(circle at 50% 50%,#0a080a 0 7%,transparent 8%),
+    repeating-radial-gradient(circle at 50% 50%,#171116 0px,#171116 2px,#292126 3px,#131013 5px);
+    border:1px solid #33242b;border-radius:50%;position:relative;
+    box-shadow:0 30px 80px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;
+}
+.album::before{
+    content:"";position:absolute;inset:20%;border-radius:50%;
+    border:1px solid rgba(255,255,255,.03);
+}
+.album-label{
+    width:35%;aspect-ratio:1;border-radius:50%;
+    background:radial-gradient(circle,#a65b6b,#692133 70%);
+    display:flex;align-items:center;justify-content:center;border:4px solid #161015;
+}
+.album-label::after{content:"";width:6px;height:6px;background:#0b080a;border-radius:50%}
+.album.playing{animation:spin 5s linear infinite}
+.track-title{margin-top:45px;font-size:37px;font-weight:400}
+.track-artist{
+    font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;
+    color:var(--muted);margin-top:15px;
+}
+.controls{display:flex;align-items:center;gap:25px;margin-top:35px}
+.control-btn{
+    width:55px;height:55px;border:1px solid rgba(255,255,255,.15);
+    border-radius:50%;background:#24131a;color:white;font-size:16px;transition:.3s;
+}
+.control-btn:hover{border-color:var(--rose);box-shadow:0 0 25px rgba(133,42,61,.15)}
+.progress-area{width:min(320px,80vw);margin-top:35px}
+.progress{width:100%;height:3px;background:#33252b;position:relative;cursor:pointer}
+.progress-fill{height:100%;width:0%;background:var(--rose)}
+.time-row{
+    display:flex;justify-content:space-between;margin-top:10px;
+    font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);
+}
+.player-message{font-size:12px;font-style:italic;color:var(--muted);margin-top:25px}
+
+/* LETTER */
+.letter-section{background:radial-gradient(ellipse at 50% 60%,rgba(86,27,41,.09),transparent 70%)}
+.letter{max-width:600px;margin:100px auto 0}
+.letter-date{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted)}
+.letter h2{font-size:65px;font-weight:400;line-height:1;margin-top:35px}
+.letter h2 em{color:var(--rose);font-weight:400}
+.letter-body{margin-top:50px;border-left:1px solid #642739;padding-left:25px}
+.letter-body p{font-size:20px;line-height:1.9;color:#bcaeb2;margin-bottom:28px}
+.signature{margin-top:55px;font-size:16px;color:var(--rose);font-style:italic}
+.typewriter{min-height:140px}
+
+/* LYRICS */
+.lyrics-section{text-align:center}
+.lyrics{
+    max-width:600px;margin:80px auto 0;position:relative;
+}
+.lyrics h2{font-size:65px;font-weight:400;line-height:1}
+.lyrics h2 em{color:var(--rose)}
+.lyric-fragments{
+    margin-top:60px;display:flex;flex-direction:column;gap:55px;
+    position:relative;z-index:3;
+}
+.fragment{
+    font-size:22px;font-style:italic;line-height:1.7;color:#c5b6ba;
+    opacity:.28;
+    transition:opacity .45s ease,color .45s ease,transform .45s ease,text-shadow .45s ease;
+}
+.fragment:hover{color:white;text-shadow:0 0 30px rgba(173,76,96,.15)}
+.fragment.active{
+    opacity:1;color:#f0d5dc;position:relative;z-index:5;
+    text-shadow:0 0 20px rgba(173,76,96,.35),0 0 45px rgba(173,76,96,.15);
+    transform:scale(1.025);
+}
+.fragment.active::after{
+    content:"";position:absolute;left:50%;bottom:-13px;width:45px;height:1px;
+    transform:translateX(-50%);
+    background:linear-gradient(90deg,transparent,#b56b7c,transparent);
+    animation:underlineGlow 1.5s ease-in-out infinite alternate;
+}
+.lyric-foot{
+    font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;
+    line-height:2;color:var(--muted);margin-top:60px;
+}
+
+/* LYRIC ATMOSPHERE — petals, cinematic light and symbols */
+.lyric-atmosphere{
+    position:absolute;inset:0;z-index:4;pointer-events:none;overflow:visible;
+}
+.atmo-particle{
+    position:absolute;pointer-events:none;opacity:0;
+    animation:atmoFloat 2.8s ease-out forwards;will-change:transform,opacity;
+}
+.atmo-petal{
+    width:13px;height:19px;border-radius:100% 0 100% 0;
+    background:linear-gradient(135deg,#c77b89,#702738);
+    box-shadow:0 0 15px rgba(181,107,124,.2);
+}
+.atmo-heart{
+    color:#bd7183;font-size:19px;
+    text-shadow:0 0 18px rgba(181,107,124,.6);
+}
+.atmo-star{color:#d6a4ad;font-size:11px;text-shadow:0 0 15px #a34d60}
+.atmo-glow{
+    position:absolute;width:100px;height:100px;border-radius:50%;
+    background:rgba(139,42,64,.22);filter:blur(45px);opacity:0;
+    animation:atmoGlow 2.5s ease-out forwards;
+}
+@keyframes atmoFloat{
+    0%{opacity:0;transform:translate(0,15px) rotate(0deg) scale(.5)}
+    20%{opacity:.85}
+    75%{opacity:.7}
+    100%{opacity:0;transform:translate(var(--drift),-75px) rotate(var(--rotation)) scale(1.2)}
+}
+@keyframes atmoGlow{
+    0%{opacity:0;transform:scale(.5)}
+    35%{opacity:.65;transform:scale(1.3)}
+    100%{opacity:0;transform:scale(2)}
+}
+@keyframes underlineGlow{from{opacity:.3;width:25px}to{opacity:.9;width:65px}}
+
+/* ROOM */
+.room-section{overflow:hidden}
+.room{
+    max-width:700px;margin:70px auto 0;position:relative;min-height:420px;
+    border:1px solid rgba(255,255,255,.05);
+    background:linear-gradient(to bottom,rgba(9,7,9,.2),rgba(9,7,9,.9)),
+    radial-gradient(ellipse at 50% 20%,#50232d,#150d12 65%);
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+}
+.window{
+    position:absolute;top:40px;width:180px;height:220px;border:6px solid #24161b;
+    background:linear-gradient(90deg,transparent 48%,#27171d 49%,#27171d 51%,transparent 52%),
+    linear-gradient(0deg,transparent 48%,#27171d 49%,#27171d 51%,transparent 52%),
+    radial-gradient(circle at 60% 30%,#44212d,#110a10);
+    box-shadow:0 0 70px rgba(117,39,58,.08);
+}
+.window:after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(140deg,transparent,#a25c6a 120%);opacity:.12;
+}
+.room-floor{
+    position:absolute;bottom:0;height:30%;width:100%;
+    background:linear-gradient(#100b10,#080608);
+    transform:perspective(500px) rotateX(10deg);transform-origin:bottom;
+}
+.lamp{
+    position:relative;z-index:3;margin-top:130px;
+    display:flex;flex-direction:column;align-items:center;
+}
+.shade{
+    width:100px;height:70px;background:linear-gradient(135deg,#37232b,#71404a,#2a171e);
+    clip-path:polygon(20% 0,80% 0,100% 100%,0 100%);transition:1s;
+}
+.stem{width:5px;height:90px;background:#30232a}
+.base{width:65px;height:10px;border-radius:50%;background:#33232a}
+.lamp-glow{
+    position:absolute;width:200px;height:200px;border-radius:50%;
+    background:#bd735b;filter:blur(100px);opacity:0;transition:1s;
+}
+.room.light-on .lamp-glow{opacity:.35}
+.room.light-on .shade{
+    background:linear-gradient(135deg,#e1b28b,#a8705a,#70414b);
+    box-shadow:0 0 50px rgba(215,133,99,.25);
+}
+.room-text{text-align:center;position:relative;z-index:4;margin-top:30px;padding:0 20px}
+.room-text p{color:var(--muted);font-style:italic;font-size:13px}
+.room-btn{
+    margin-top:25px;background:transparent;border:1px solid rgba(255,255,255,.15);
+    padding:15px 25px;color:var(--paper);font-family:'DM Mono',monospace;
+    font-size:9px;letter-spacing:2px;
+}
+
+/* SECRET */
+.secret-section{text-align:center;padding-top:120px;padding-bottom:120px}
+.secret-star{
+    font-size:35px;color:#a64c61;cursor:pointer;display:inline-block;
+    transition:.6s;animation:float 5s infinite;
+}
+.secret-star:hover{transform:scale(1.5);text-shadow:0 0 40px #9e4b61}
+.secret-message{
+    max-height:0;overflow:hidden;opacity:0;transition:1s;max-width:450px;margin:auto;
+}
+.secret-message.show{max-height:300px;opacity:1;margin-top:35px}
+.secret-message p{font-size:22px;line-height:1.8;color:#bdaeb3;font-style:italic}
+
+/* END */
+.end{
+    min-height:80svh;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;text-align:center;padding:100px 25px;position:relative;
+    background:radial-gradient(ellipse at 50% 50%,rgba(90,27,42,.18),transparent 65%);
+}
+.end h2{font-size:clamp(55px,13vw,90px);font-weight:400;line-height:1;margin-top:40px}
+.end h2 em{color:var(--rose)}
+.end p{color:var(--muted);margin-top:30px;font-size:14px;line-height:1.9}
+.return{
+    margin-top:50px;font-family:'DM Mono',monospace;font-size:9px;
+    letter-spacing:3px;border-bottom:1px solid rgba(255,255,255,.15);padding-bottom:12px;
+}
+footer{
+    padding:25px 7%;display:flex;justify-content:space-between;
+    font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;
+    color:#6d6267;border-top:1px solid rgba(255,255,255,.06);
+}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(30px);transition:1s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* MOBILE */
+@media(max-width:600px){
+    .nav{padding:24px 6%}
+    .nav-note{font-size:8px;letter-spacing:1px}
+    .hero h1{font-size:clamp(76px,19vw,110px);letter-spacing:-5px}
+    .moon{width:65px;height:65px;right:10%;top:14%}
+    .hero-sub{font-size:14px}
+    .hero-bottom{font-size:7px;letter-spacing:1px}
+    .section{padding:85px 7%}
+    .section-head{font-size:8px;letter-spacing:2px}
+    .letter{margin-top:70px}
+    .letter h2{font-size:54px}
+    .letter-body p{font-size:18px;line-height:1.9}
+    .lyrics h2{font-size:55px}
+    .fragment{font-size:19px}
+    .room{min-height:380px}
+    .window{width:145px;height:190px;top:35px}
+    .lamp{margin-top:120px}
+    .room-text p{font-size:12px}
+    .end h2{font-size:65px}
+    footer{font-size:7px;letter-spacing:1px}
+    .atmo-petal{width:10px;height:15px}
+}
+@media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;scroll-behavior:auto!important}
+    .atmo-particle,.atmo-glow{opacity:.55}
+    .fragment.active::after{animation:none;opacity:.7}
+}
+</style>
+</head>
+
+<body>
+<div class="noise"></div>
+<div class="cursor-glow"></div>
+
+<header class="nav">
+    <a href="#home" class="brand">IWBY<span>.</span></a>
+    <div class="nav-note">UN UNIVERSO PRIVADO</div>
+</header>
+
+<section class="hero" id="home">
+    <div class="sky"></div>
+    <div class="moon"></div>
+    <div class="rain" id="rain"></div>
+    <div class="city">
+        <div class="building b1"></div><div class="building b2"></div>
+        <div class="building b3"></div><div class="building b4"></div>
+        <div class="building b5"></div><div class="building b6"></div>
+        <div class="building b7"></div><div class="building b8"></div>
+        <div class="building b9"></div><div class="building b10"></div>
+        <div class="building b11"></div><div class="building b12"></div>
+    </div>
+    <div class="hero-content">
+        <p class="kicker">A LOVE LETTER IN THE DARK</p>
+        <h1>I wanna<br><span>be yours.</span></h1>
+        <p class="hero-sub">I’m dedicating this to you, since you might not know English..</p>
+        <button class="open-btn" id="open">ENTER THE NIGHT <span>↓</span></button>
+    </div>
+    <div class="hero-bottom">
+        <span>01 / EL COMIENZO</span><span>DESPLAZARSE DESPACIO</span>
+    </div>
+</section>
+
+<section class="clock-section">
+    <div class="clock" id="clock">00:00:00</div>
+    <p class="clock-caption">En algún lugar en mitad de la noche</p>
+</section>
+
+<section class="section player-section" id="song">
+    <div class="section-head"><span>01</span><span>EL SONIDO DE LA NOCHE</span></div>
+    <div class="player reveal">
+        <div class="album" id="album"><div class="album-label"></div></div>
+        <h2 class="track-title">I Wanna Be Yours</h2>
+        <p class="track-artist">ARCTIC MONKEYS</p>
+        <div class="controls">
+            <button class="control-btn" id="play" aria-label="Reproducir">▶</button>
+        </div>
+        <div class="progress-area">
+            <div class="progress" id="progress"><div class="progress-fill" id="fill"></div></div>
+            <div class="time-row"><span id="current">0:00</span><span id="duration">0:00</span></div>
+        </div>
+        <p class="player-message" id="playerMessage">A song for the quiet hours.</p>
+    </div>
+    <audio id="audio" preload="metadata">
+        <source src="I Wanna Be Yours.mp3" type="audio/mpeg">
+    </audio>
+</section>
+
+<section class="section letter-section">
+    <div class="section-head"><span>02</span><span>COSAS QUE QUEDARON SIN DECIR</span></div>
+    <article class="letter reveal">
+        <p class="letter-date">2:17 AM — UN PENSAMIENTO</p>
+        <h2>Si pudiera<br><em>decirte todo...</em></h2>
+        <div class="letter-body">
+            <div class="typewriter" id="typewriter"></div>
+            <p>Asi que preferi hacerte algo diferente. Algo que llevara un poquito mas de detalle.</p>
+            <p>No hay ninguna razon complicada detras de esto.</p>
+            <p>Solo me parecio bonito dedicarte algo y espero que te guste.</p>
+        </div>
+        <p class="signature">— por que se que amas esta canción.</p>
+    </article>
+</section>
+
+<section class="section lyrics-section">
+    <div class="section-head"><span>03</span><span>LAS PALABRAS</span></div>
+    <div class="lyrics reveal">
+        <p class="kicker">LYRICS / FRAGMENTS</p>
+        <h2>I WANNA<br><em>BE YOURS.</em></h2>
+
+        <!-- Effects are layered over the lyric area and never block interaction. -->
+        <div class="lyric-atmosphere" id="lyricAtmosphere" aria-hidden="true"></div>
+
+        <div class="lyric-fragments" id="lyricFragments">
+            <p class="fragment" data-lyric="0">I wanna be your vacuum cleaner</p>
+            <p class="fragment" data-lyric="1">Breathing in your dust</p>
+            <p class="fragment" data-lyric="2">I wanna be your Ford Cortina</p>
+            <p class="fragment" data-lyric="3">I will never rust</p>
+            <p class="fragment" data-lyric="4">If you like your coffee hot</p>
+            <p class="fragment" data-lyric="5">Let me be your coffee pot</p>
+            <p class="fragment" data-lyric="6">You call the shots, babe</p>
+            <p class="fragment" data-lyric="7">I just wanna be yours</p>
+            <p class="fragment" data-lyric="8">Secrets I have held in my heart</p>
+            <p class="fragment" data-lyric="9">Are harder to hide than I thought</p>
+            <p class="fragment" data-lyric="10">Maybe I just wanna be yours</p>
+            <p class="fragment" data-lyric="11">I wanna be yours, I wanna be yours</p>
+            <p class="fragment" data-lyric="12">Wanna be yours</p>
+            <p class="fragment" data-lyric="13">Wanna be yours</p>
+            <p class="fragment" data-lyric="14">Wanna be yours</p>
+            <p class="fragment" data-lyric="15">Let me be your 'leccy meter</p>
+            <p class="fragment" data-lyric="16">And I'll never run out</p>
+            <p class="fragment" data-lyric="17">Let me be the portable heater</p>
+            <p class="fragment" data-lyric="18">That you'll get cold without</p>
+            <p class="fragment" data-lyric="19">I wanna be your setting lotion (wanna be)</p>
+            <p class="fragment" data-lyric="20">Hold your hair in deep devotion (how deep?)</p>
+            <p class="fragment" data-lyric="21">At least as deep as the Pacific Ocean</p>
+            <p class="fragment" data-lyric="22">I wanna be yours</p>
+            <p class="fragment" data-lyric="23">Secrets I have held in my heart</p>
+            <p class="fragment" data-lyric="24">Are harder to hide than I thought</p>
+            <p class="fragment" data-lyric="25">Maybe I just wanna be yours</p>
+            <p class="fragment" data-lyric="26">I wanna be yours, I wanna be yours</p>
+            <p class="fragment" data-lyric="27">Wanna be yours</p>
+            <p class="fragment" data-lyric="28">Wanna be yours</p>
+            <p class="fragment" data-lyric="29">Wanna be yours</p>
+            <p class="fragment" data-lyric="30">Wanna be yours</p>
+            <p class="fragment" data-lyric="31">Wanna be yours</p>
+            <p class="fragment" data-lyric="32">Wanna be yours</p>
+            <p class="fragment" data-lyric="33">Wanna be yours</p>
+            <p class="fragment" data-lyric="34">Wanna be yours</p>
+            <p class="fragment" data-lyric="35">I wanna be your vacuum cleaner (wanna be yours)</p>
+            <p class="fragment" data-lyric="36">Breathing in your dust (wanna be yours)</p>
+            <p class="fragment" data-lyric="37">I wanna be your Ford Cortina (wanna be yours)</p>
+            <p class="fragment" data-lyric="38">I will never rust (wanna be yours)</p>
+            <p class="fragment" data-lyric="39">I just wanna be yours (wanna be yours)</p>
+            <p class="fragment" data-lyric="40">I just wanna be yours (wanna be yours)</p>
+            <p class="fragment" data-lyric="41">I just wanna be yours (wanna be yours)</p>
+        </div>
+        <p class="lyric-foot">SOME WORDS FEEL DIFFERENT AFTER MIDNIGHT.</p>
+    </div>
+</section>
+
+<section class="section room-section">
+    <div class="section-head"><span>04</span><span>UN LUGAR SEGURO</span></div>
+    <div class="room reveal" id="room">
+        <div class="window"></div><div class="room-floor"></div><div class="lamp-glow"></div>
+        <div class="lamp">
+            <div class="shade"></div><div class="stem"></div><div class="base"></div>
+        </div>
+        <div class="room-text">
+            <p>Incluso en una habitacion<br>tan oscura tiene algo que merece la pena iluminar.</p>
+            <button class="room-btn" id="light">ENCIENDE LA LUZ</button>
+        </div>
+    </div>
+</section>
+
+<section class="section secret-section">
+    <div class="section-head"><span>05</span><span>NO TE VAYAS TODAVIA</span></div>
+    <div class="reveal">
+        <p class="kicker">¿TE DIGO ALGO CURIOSO?</p>
+        <div class="secret-star" id="star">✦</div>
+        <div class="secret-message" id="secret">
+            <p>Jorge 
+                
+                
+                JAJAJJAJAJAJJAJAJ ME AMOO, ya ahora si... te aprecio mucho y
+                lo digo en serio, se que amas esta canción, como no? si es hermosa,
+                te la queria dedicar pero me parecio muy simple mandarte el link de
+                spotify asi que mejor te hice un universo musical y espero te guste.</p>
+        </div>
+    </div>
+</section>
+
+<section class="end">
+    <p class="kicker">FIN DE LA NOCHE</p>
+    <h2>Espero que<br><em>esto sea suficiente.</em></h2>
+    <p>Una canción. Un pensamiento.<br>Un pequeño detalle con mucho cariño.</p>
+    <a href="#home" class="return">VOLVER AL PRINCIPIO ↑</a>
+</section>
+
+<footer><span>PARA XIOMARA</span><span>IWBY. © 2026</span></footer>
+
+<script>
+/* RAIN */
+const rain = document.getElementById("rain");
+for(let i=0;i<65;i++){
+    const drop=document.createElement("div");
+    drop.className="drop";
+    drop.style.left=Math.random()*100+"%";
+    drop.style.animationDuration=(1+Math.random()*2)+"s";
+    drop.style.animationDelay=(-Math.random()*4)+"s";
+    drop.style.opacity=.15+Math.random()*.35;
+    rain.appendChild(drop);
+}
+
+/* CLOCK */
+function updateClock(){
+    const now=new Date();
+    document.getElementById("clock").textContent=
+        now.toLocaleTimeString("en-US",{hour12:false});
+}
+updateClock();
+setInterval(updateClock,1000);
+
+/* NAVIGATION */
+document.getElementById("open").addEventListener("click",()=>{
+    document.getElementById("song").scrollIntoView({behavior:"smooth"});
+});
+
+/* AUDIO */
+const audio=document.getElementById("audio");
+const play=document.getElementById("play");
+const album=document.getElementById("album");
+const fill=document.getElementById("fill");
+const current=document.getElementById("current");
+const duration=document.getElementById("duration");
+const playerMessage=document.getElementById("playerMessage");
+
+play.addEventListener("click",async()=>{
+    if(audio.paused){
+        try{
+            await audio.play();
+            play.textContent="Ⅱ";
+            album.classList.add("playing");
+            playerMessage.textContent="Playing in the quiet.";
+        }catch(e){
+            playerMessage.textContent="Place your MP3 in the project folder.";
+        }
+    }else{
+        audio.pause();
+    }
+});
+
+audio.addEventListener("play",()=>{
+    play.textContent="Ⅱ";
+    album.classList.add("playing");
+});
+audio.addEventListener("pause",()=>{
+    play.textContent="▶";
+    album.classList.remove("playing");
+});
+audio.addEventListener("loadedmetadata",()=>{
+    duration.textContent=formatTime(audio.duration);
+});
+audio.addEventListener("timeupdate",()=>{
+    if(audio.duration){
+        fill.style.width=(audio.currentTime/audio.duration*100)+"%";
+        current.textContent=formatTime(audio.currentTime);
+    }
+});
+audio.addEventListener("ended",()=>{
+    play.textContent="▶";
+    album.classList.remove("playing");
+    playerMessage.textContent="A song for the quiet hours.";
+});
+
+function formatTime(seconds){
+    if(!isFinite(seconds))return "0:00";
+    const m=Math.floor(seconds/60);
+    const s=Math.floor(seconds%60);
+    return m+":"+String(s).padStart(2,"0");
+}
+
+/* SEEK */
+document.getElementById("progress").addEventListener("click",(e)=>{
+    if(!audio.duration)return;
+    const rect=e.currentTarget.getBoundingClientRect();
+    const percent=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));
+    audio.currentTime=percent*audio.duration;
+});
+
+/* LAMP */
+const room=document.getElementById("room");
+const light=document.getElementById("light");
+let lit=false;
+light.addEventListener("click",()=>{
+    lit=!lit;
+    room.classList.toggle("light-on",lit);
+    light.textContent=lit?"APAGA LA LUZ":"ENCIENDE LA LUZ";
+});
+
+/* SECRET */
+const star=document.getElementById("star");
+const secret=document.getElementById("secret");
+star.addEventListener("click",()=>{
+    secret.classList.toggle("show");
+});
+
+/* REVEAL */
+const observer=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+        if(entry.isIntersecting){
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+        }
+    });
+},{threshold:.15});
+document.querySelectorAll(".reveal").forEach(el=>observer.observe(el));
+
+/* TYPEWRITER */
+const typewriter=document.getElementById("typewriter");
+const letterText=
+"Quisiera escribirte un poema. "+
+"pero me parece algo innecesario, "+
+"por que esta cancion refleja muy bien "+
+"lo que quisiera decirte. o lo que se guarda en la noche "+
+"o quien sabe, algo que se guarda bajo 7 llaves.";
+let typeIndex=0;
+let typeStarted=false;
+
+const typeObserver=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+        if(entry.isIntersecting&&!typeStarted){
+            typeStarted=true;
+            writeText();
+            typeObserver.unobserve(typewriter);
+        }
+    });
+},{threshold:.5});
+typeObserver.observe(typewriter);
+
+function writeText(){
+    if(typeIndex<letterText.length){
+        typewriter.textContent+=letterText.charAt(typeIndex);
+        typeIndex++;
+        setTimeout(writeText,35);
+    }
+}
+
+/* SUBTLE MOUSE GLOW */
+const glow=document.querySelector(".cursor-glow");
+document.addEventListener("mousemove",e=>{
+    glow.style.left=(e.clientX-125)+"px";
+    glow.style.top=(e.clientY-125)+"px";
+});
+
+/* LYRIC TIMINGS — seconds */
+const lyricEntries=[
+    {time:18.04,textIndex:0},
+    {time:21.87,textIndex:1},
+    {time:25.07,textIndex:2},
+    {time:28.78,textIndex:3},
+    {time:32.43,textIndex:4},
+    {time:36.03,textIndex:5},
+    {time:39.49,textIndex:6},
+    {time:42.36,textIndex:7},
+    {time:46.02,textIndex:8},
+    {time:49.77,textIndex:9},
+    {time:53.32,textIndex:10},
+    {time:56.76,textIndex:11},
+    {time:62.30,textIndex:12},
+    {time:65.97,textIndex:13},
+    {time:69.43,textIndex:14},
+    {time:74.87,textIndex:15},
+    {time:78.66,textIndex:16},
+    {time:81.52,textIndex:17},
+    {time:85.79,textIndex:18},
+    {time:89.13,textIndex:19},
+    {time:92.72,textIndex:20},
+    {time:96.27,textIndex:21},
+    {time:99.12,textIndex:22},
+    {time:103.23,textIndex:23},
+    {time:106.94,textIndex:24},
+    {time:110.33,textIndex:25},
+    {time:113.69,textIndex:26},
+    {time:119.29,textIndex:27},
+    {time:122.89,textIndex:28},
+    {time:126.46,textIndex:29},
+    {time:129.96,textIndex:30},
+    {time:133.33,textIndex:31},
+    {time:137.04,textIndex:32},
+    {time:140.54,textIndex:33},
+    {time:144.12,textIndex:34},
+    {time:146.27,textIndex:35},
+    {time:149.89,textIndex:36},
+    {time:153.11,textIndex:37},
+    {time:156.84,textIndex:38},
+    {time:159.60,textIndex:39},
+    {time:162.98,textIndex:40},
+    {time:166.66,textIndex:41}
+];
+
+const lyricFragments=[...document.querySelectorAll(".fragment")];
+const lyricAtmosphere=document.getElementById("lyricAtmosphere");
+let previousLyric=-1;
+
+/* Create one small burst around the active lyric. */
+function createAtmosphere(){
+    const activeFragment=lyricFragments[previousLyric];
+    if(!activeFragment||!lyricAtmosphere)return;
+
+    const parentRect=lyricAtmosphere.getBoundingClientRect();
+    const lyricRect=activeFragment.getBoundingClientRect();
+    const centerY=lyricRect.top-parentRect.top+lyricRect.height/2;
+    const centerX=lyricRect.left-parentRect.left+lyricRect.width/2;
+
+    // Romantic petals, floating on both sides of the lyric.
+    for(let i=0;i<4;i++){
+        const petal=document.createElement("span");
+        petal.className="atmo-particle atmo-petal";
+        const side=i%2===0?-1:1;
+        petal.style.left=(centerX+side*(65+Math.random()*35))+"px";
+        petal.style.top=(centerY+Math.random()*30-15)+"px";
+        petal.style.setProperty("--drift",(Math.random()*70-35)+"px");
+        petal.style.setProperty("--rotation",(Math.random()*180-90)+"deg");
+        petal.style.animationDelay=(Math.random()*.25)+"s";
+        lyricAtmosphere.appendChild(petal);
+        setTimeout(()=>petal.remove(),3400);
+    }
+
+    // A soft burgundy cinematic glow behind the phrase.
+    const glowBurst=document.createElement("div");
+    glowBurst.className="atmo-glow";
+    glowBurst.style.left=(centerX-50)+"px";
+    glowBurst.style.top=(centerY-50)+"px";
+    lyricAtmosphere.appendChild(glowBurst);
+    setTimeout(()=>glowBurst.remove(),2700);
+
+    // Tiny light particles.
+    for(let i=0;i<5;i++){
+        const particle=document.createElement("span");
+        particle.className="atmo-particle atmo-star";
+        particle.textContent="✦";
+        particle.style.left=(centerX+(Math.random()-.5)*180)+"px";
+        particle.style.top=(centerY+(Math.random()-.5)*65)+"px";
+        particle.style.setProperty("--drift",(Math.random()*60-30)+"px");
+        particle.style.setProperty("--rotation","90deg");
+        particle.style.animationDelay=(Math.random()*.3)+"s";
+        lyricAtmosphere.appendChild(particle);
+        setTimeout(()=>particle.remove(),3100);
+    }
+
+    // One delicate symbolic heart.
+    const heart=document.createElement("span");
+    heart.className="atmo-particle atmo-heart";
+    heart.textContent="♡";
+    heart.style.left=(centerX-9)+"px";
+    heart.style.top=(centerY-35)+"px";
+    heart.style.setProperty("--drift","0px");
+    heart.style.setProperty("--rotation","15deg");
+    lyricAtmosphere.appendChild(heart);
+    setTimeout(()=>heart.remove(),3100);
+}
+
+function updateLyrics(){
+    let activeIndex=-1;
+
+    for(const entry of lyricEntries){
+        if(Number.isFinite(entry.time)&&audio.currentTime>=entry.time){
+            activeIndex=entry.textIndex;
+        }
+    }
+
+    lyricFragments.forEach((fragment,index)=>{
+        fragment.classList.toggle("active",index===activeIndex);
+    });
+
+    if(activeIndex!==previousLyric){
+        previousLyric=activeIndex;
+
+        if(activeIndex!==-1){
+            const currentText=lyricFragments[activeIndex].textContent.toLowerCase();
+            if(currentText.includes("wanna be yours")){
+                createAtmosphere();
+            }
+        }
+    }
+}
+
+audio.addEventListener("timeupdate",updateLyrics);
+audio.addEventListener("seeked",updateLyrics);
+</script>
+</body>
+</html>
